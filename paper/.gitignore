@@ -9,8 +9,5 @@
 *.fls
 *.run.xml
 
-# PDF output
-*.pdf
-
 # Mac
 .DS_Store
