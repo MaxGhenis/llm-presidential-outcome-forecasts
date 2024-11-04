@@ -7,23 +7,23 @@ Table~\ref{tab:model_comparison} presents the core results of the analysis, show
 \begin{enumerate}
     \item \textbf{Environmental Effects:} All models predict improved air quality (lower PM2.5) under Harris:
     \begin{itemize}
-        \item GPT-4o: -1.28 $\mu g/m^3$ (SE: 0.06)
-        \item GPT-4o-mini: -0.15 $\mu g/m^3$ (SE: 0.06)
-        \item Grok: -1.62 $\mu g/m^3$ (SE: 0.06)
+        \item GPT-4o: -1.28 $\mu g/m^3$ (SE: 0.04)
+        \item GPT-4o-mini: -0.16 $\mu g/m^3$ (SE: 0.04)
+        \item Grok: -1.54 $\mu g/m^3$ (SE: 0.04)
     \end{itemize}
     
     \item \textbf{Economic Effects:} GDP predictions show substantial uncertainty:
     \begin{itemize}
-        \item GPT-4o: +\$504 per capita (SE: 273)
-        \item GPT-4o-mini: -\$271 per capita (SE: 274)
-        \item Grok: +\$962 per capita (SE: 276)
+        \item GPT-4o: +\$328.63 per capita (SE: 166.88)
+        \item GPT-4o-mini: +\$157.86 per capita (SE: 167.51)
+        \item Grok: +\$782.74 per capita (SE: 169.44)
     \end{itemize}
     
     \item \textbf{Poverty Effects:} Consistent prediction of poverty reduction:
     \begin{itemize}
-        \item GPT-4o: -2.09 percentage points (SE: 0.16)
-        \item GPT-4o-mini: -0.86 percentage points (SE: 0.16)
-        \item Grok: -3.42 percentage points (SE: 0.16)
+        \item GPT-4o: -1.92 percentage points (SE: 0.11)
+        \item GPT-4o-mini: -0.75 percentage points (SE: 0.11)
+        \item Grok: -3.44 percentage points (SE: 0.11)
     \end{itemize}
 \end{enumerate}
 
@@ -35,13 +35,12 @@ Table~\ref{tab:model_comparison} presents the core results of the analysis, show
     & \multicolumn{1}{c}{GPT-4o} & \multicolumn{2}{c}{GPT-4o-mini} & \multicolumn{2}{c}{Grok} \\
     Outcome & Effect & Effect & Diff & Effect & Diff \\
     \hline
-    pm25 & -1.28 (0.06) & -0.15 (0.06) & 1.13*** & -1.62 (0.06) & -0.34*** \\
-    gdp\_per\_capita & 504.19 (272.86) & -271.13 (273.55) & -775.31* & 962.13 (276.34) & 457.94 \\
-    poverty\_rate & -2.09 (0.16) & -0.86 (0.16) & 1.23*** & -3.42 (0.16) & -1.33*** \\
+    pm25 & -1.28 (0.04) & -0.16 (0.04) & 1.12*** & -1.54 (0.04) & -0.26*** \\
+    gdp\_per\_capita & 328.63 (166.88) & 157.86 (167.51) & -170.76 & 782.74 (169.44) & 454.11 \\
+    poverty\_rate & -1.92 (0.11) & -0.75 (0.11) & 1.17*** & -3.44 (0.11) & -1.52*** \\
     \hline
-    \multicolumn{6}{p{0.95\textwidth}}{\small Note: Effects show difference in predictions between Harris and Trump.} \\
-    \multicolumn{6}{p{0.95\textwidth}}{\small Standard errors in parentheses. Diff columns show difference from GPT-4o effect.} \\
-    \multicolumn{6}{p{0.95\textwidth}}{\small * p<0.05, ** p<0.01, *** p<0.001} \\
+    \multicolumn{6}{p{0.95\textwidth}}{\small Note: Effects show difference in predictions between Harris and Trump. 
+    Standard errors in parentheses. Diff columns show difference from GPT-4o effect. * p<0.05, ** p<0.01, *** p<0.001} \\
     \end{tabular}
     \label{tab:model_comparison}
 \end{table}
@@ -53,16 +52,16 @@ Systematic patterns emerge in how models differ from the base GPT-4o predictions
 \begin{enumerate}
     \item \textbf{GPT-4o-mini} consistently predicts smaller effects:
     \begin{itemize}
-        \item Significantly smaller PM2.5 effect (1.13 $\mu g/m^3$ smaller, p < 0.001)
-        \item Switched sign on GDP effect (-775.31 difference, p < 0.05)
-        \item Smaller poverty reduction (1.23 percentage point smaller, p < 0.001)
+        \item Significantly smaller PM2.5 effect (1.12 $\mu g/m^3$ smaller, p < 0.001)
+        \item Smaller GDP effect (-170.76, n.s.)
+        \item Smaller poverty reduction (1.17 percentage points smaller, p < 0.001)
     \end{itemize}
 
     \item \textbf{Grok} tends toward larger effects:
     \begin{itemize}
-        \item Larger PM2.5 improvement (-0.34 $\mu g/m^3$ difference, p < 0.001)
-        \item Nearly double the GDP effect (458 higher, n.s.)
-        \item Substantially larger poverty reduction (-1.33 difference, p < 0.001)
+        \item Larger PM2.5 improvement (-0.26 $\mu g/m^3$ difference, p < 0.001)
+        \item Higher GDP effect (454.11 difference, n.s.)
+        \item Larger poverty reduction (-1.52 difference, p < 0.001)
     \end{itemize}
 \end{enumerate}
 
@@ -71,9 +70,9 @@ Systematic patterns emerge in how models differ from the base GPT-4o predictions
 The standard errors in Table~\ref{tab:model_comparison} reveal varying levels of prediction uncertainty:
 
 \begin{itemize}
-    \item \textbf{Environmental predictions} show high precision (SE $\approx$ 0.06 $\mu g/m^3$)
-    \item \textbf{Economic predictions} exhibit substantial uncertainty (SE = \$275)
-    \item \textbf{Poverty predictions} show moderate precision (SE = 0.16 percentage points)
+    \item \textbf{Environmental predictions} show high precision (SE $\approx$ 0.04 $\mu g/m^3$)
+    \item \textbf{Economic predictions} exhibit substantial uncertainty (SE = \$168)
+    \item \textbf{Poverty predictions} show moderate precision (SE = 0.11 percentage points)
 \end{itemize}
 
 This pattern may reflect the relative complexity and number of factors influencing each outcome, with GDP being particularly challenging to predict.

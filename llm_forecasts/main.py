@@ -8,6 +8,7 @@ import yaml
 import time
 from openai import OpenAI
 from .llm import run_prediction_batch
+import argparse
 
 
 def format_p_value(p: float) -> str:
@@ -28,31 +29,57 @@ def format_effect(effect: float, se: float, p: float) -> str:
     return f"{effect:6.2f} (SE: {se:.2f}){stars}"
 
 
-def main(results_file: str = None, force_generate: bool = False):
+def main(
+    results_file: str = None,
+    force_generate: bool = False,
+    additional_runs: bool = False,
+):
     """
-    Run analysis, generating results if they don't exist.
+    Run analysis, generating results if they don't exist or combining if additional_runs=True.
     Args:
         results_file: Optional specific results file to use
         force_generate: If True, generate new results even if file exists
+        additional_runs: If True, append to existing results
     """
     Config.setup()
 
-    # Try to find existing results unless force_generate is True
-    if not force_generate and results_file is None:
+    existing_df = None
+
+    # Find most recent results file if not specified
+    if results_file is None:
         results_files = list(
             Config.OUTPUTS_DIR.glob("model_comparison_results_*.csv")
         )
         if results_files:
             results_file = max(results_files, key=lambda x: x.stat().st_mtime)
-            df = pd.read_csv(results_file)
-            # Check if we have all models
-            if set(df["model"].unique()) == set(Config.MODELS):
-                print(f"\nLoaded {len(df)} results from {results_file}")
-                run_analysis(df)
-                return
+            if not force_generate:
+                if additional_runs:
+                    # Load but don't return - we'll add more results
+                    existing_df = pd.read_csv(results_file)
+                    print(
+                        f"\nLoaded {len(existing_df)} existing results from {results_file}"
+                    )
+                else:
+                    # Check if we have all models and return if complete
+                    df = pd.read_csv(results_file)
+                    if set(df["model"].unique()) == set(Config.MODELS):
+                        print(
+                            f"\nLoaded {len(df)} results from {results_file}"
+                        )
+                        run_analysis(df)
+                        return
 
-    # If we get here, we need to generate results
-    print("\nGenerating new results...")
+    # Store original run count if doing additional runs
+    original_runs = Config.RUNS_PER_CONDITION
+    if additional_runs:
+        Config.RUNS_PER_CONDITION = 100  # Set to get additional 100
+
+    # Generate new results
+    print(
+        "\nGenerating "
+        + ("additional" if additional_runs else "new")
+        + " results..."
+    )
 
     # Load outcomes
     with open("outcomes.yaml", "r") as f:
@@ -74,11 +101,9 @@ def main(results_file: str = None, force_generate: bool = False):
             for candidate in Config.CANDIDATES:
                 print(f"Running predictions for {candidate}...")
 
-                # Pass model in metric dictionary
                 metric_copy = metric.copy()
                 metric_copy["model"] = model_name
 
-                # Get results
                 results, validation_df = run_prediction_batch(
                     openai_client,
                     metric_copy,
@@ -86,7 +111,6 @@ def main(results_file: str = None, force_generate: bool = False):
                     Config.RUNS_PER_CONDITION,
                 )
 
-                # Add model information
                 for result in results:
                     result["model"] = model_name
                 validation_df["model"] = model_name
@@ -94,14 +118,26 @@ def main(results_file: str = None, force_generate: bool = False):
                 all_results.extend(results)
                 all_validations.append(validation_df)
 
-                # Add small delay between runs
                 time.sleep(Config.RATE_LIMIT_DELAY)
 
-    # Convert to DataFrame and save
-    df = pd.DataFrame(all_results)
+    # Restore original run count if needed
+    if additional_runs:
+        Config.RUNS_PER_CONDITION = original_runs
+
+    # Convert to DataFrame
+    new_df = pd.DataFrame(all_results)
     validation_df = pd.concat(all_validations, ignore_index=True)
 
-    # Save raw results
+    # Combine with existing results if available
+    if existing_df is not None:
+        df = pd.concat([existing_df, new_df], ignore_index=True)
+        print(
+            f"\nCombined {len(existing_df)} existing and {len(new_df)} new results"
+        )
+    else:
+        df = new_df
+
+    # Save results
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     results_file = (
         Config.OUTPUTS_DIR / f"model_comparison_results_{timestamp}.csv"
@@ -113,9 +149,9 @@ def main(results_file: str = None, force_generate: bool = False):
     df.to_csv(results_file, index=False)
     validation_df.to_csv(validation_file, index=False)
 
-    print(f"\nSaved results to {results_file}")
+    print(f"\nSaved {len(df)} total results to {results_file}")
 
-    # Run analysis on new results
+    # Run analysis on combined results
     run_analysis(df)
 
 
@@ -201,4 +237,27 @@ def run_analysis(df: pd.DataFrame):
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+        description="Run model comparison analysis"
+    )
+    parser.add_argument(
+        "--results_file", type=str, help="Path to results file"
+    )
+    parser.add_argument(
+        "--force_generate",
+        action="store_true",
+        help="Force generation of new results",
+    )
+    parser.add_argument(
+        "--additional_runs",
+        action="store_true",
+        help="Generate additional runs and combine with existing",
+    )
+
+    args = parser.parse_args()
+
+    main(
+        results_file=args.results_file,
+        force_generate=args.force_generate,
+        additional_runs=args.additional_runs,
+    )

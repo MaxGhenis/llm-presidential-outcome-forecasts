@@ -9,6 +9,7 @@ from .patterns import (
     CONTEXT_PATTERN,
     GDP_PATTERN,
     NUMBER_PATTERN,
+    YEAR_PATTERN,
 )
 
 

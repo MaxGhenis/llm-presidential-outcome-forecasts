@@ -1,5 +1,8 @@
 """Regular expression patterns for number extraction."""
 
+# Pattern to identify just years
+YEAR_PATTERN = r"\b20\d{2}\b"
+
 # Numbers with units (μg/m³ or %)
 UNIT_PATTERN = r"(\d+\.?\d*)\s*(?:μg/m³|ug/m3|%)"
 
@@ -15,6 +18,3 @@ CONTEXT_PATTERN = r"(?:concentration|rate|level)[:\s]+(\d+\.?\d*)"
 
 # Any reasonable number pattern
 NUMBER_PATTERN = r"(?:^|[^\d])(\d+\.?\d*|\d*\.\d+)(?:[^\d]|$)"
-
-# Pattern to identify just years (for filtering)
-YEAR_PATTERN = r"\b20\d{2}\b"
