@@ -11,13 +11,13 @@ class Config:
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     XAI_API_KEY = os.getenv("XAI_API_KEY")
     BASE_MODEL = "gpt-4o"  # Base model for comparisons
-    MODELS = ["gpt-4o", "gpt-4o-mini", "grok-beta"]
+    MODELS = ["grok-beta", "gpt-4o", "gpt-4o-mini"]
     RATE_LIMIT_DELAY = 1  # seconds
 
     # Analysis Settings
     CANDIDATES = ["Donald Trump", "Kamala Harris"]
     RANDOM_SEED = 42
-    RUNS_PER_CONDITION = 10
+    RUNS_PER_CONDITION = 100
 
     @classmethod
     def setup(cls):

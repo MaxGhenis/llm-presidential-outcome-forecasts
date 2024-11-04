@@ -87,6 +87,8 @@ metrics:
       Key context:
       - Historical SPM poverty rates:
         {history}
+      - SPM resources: Includes cash and non-cash benefits (like SNAP) and deducts taxes and medical expenses.
+      - SPM thresholds: 83% of the five-year median expenditures on food, clothing, shelter, utilities, telephone and internet, split by housing tenure (owners with/without mortgage, renters) and geographic location.
       
       After the statistician thinks through what affected the rate, end your response with a single line containing ONLY the poverty rate as a number (with up to one decimal point). For example: 12.4
     validation:

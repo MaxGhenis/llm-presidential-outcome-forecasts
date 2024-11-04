@@ -7,7 +7,7 @@ import numpy as np
 import yaml
 import time
 from openai import OpenAI
-from .gpt import run_prediction_batch
+from .llm import run_prediction_batch
 
 
 def format_p_value(p: float) -> str:
