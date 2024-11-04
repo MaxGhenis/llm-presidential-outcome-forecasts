@@ -1,0 +1,13 @@
+outcome,model,candidate,n,mean,std,ci_lower,ci_upper
+gdp_per_capita,gpt-4o,Donald Trump,9,68286.6,651.283,67425.74,69000.16
+gdp_per_capita,gpt-4o,Kamala Harris,10,68470.14,671.633,67531.975,69269.45
+gdp_per_capita,gpt-4o-mini,Donald Trump,10,68262.7,915.149,67529.768,70198.892
+gdp_per_capita,gpt-4o-mini,Kamala Harris,10,67915.96,799.535,66647.5,69275.0
+pm25,gpt-4o,Donald Trump,10,8.45,0.723,7.102,9.1
+pm25,gpt-4o,Kamala Harris,9,7.022,0.12,6.82,7.18
+pm25,gpt-4o-mini,Donald Trump,10,8.18,0.169,7.922,8.378
+pm25,gpt-4o-mini,Kamala Harris,10,8.04,0.171,7.822,8.3
+poverty_rate,gpt-4o,Donald Trump,10,13.11,0.775,11.748,14.165
+poverty_rate,gpt-4o,Kamala Harris,10,11.33,0.843,9.925,12.762
+poverty_rate,gpt-4o-mini,Donald Trump,10,12.78,0.377,12.145,13.365
+poverty_rate,gpt-4o-mini,Kamala Harris,10,12.64,1.104,10.68,14.23

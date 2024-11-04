@@ -7,11 +7,13 @@ from .utils import format_history
 from .validation import extract_numbers_vectorized
 
 
-def get_gpt4_responses(client: OpenAI, prompt: str, n: int = 50) -> List[str]:
+def get_gpt4_responses(
+    client: OpenAI, prompt: str, model: str, n: int = 50
+) -> List[str]:
     """Get multiple responses from GPT-4 in one call"""
     try:
         response = client.chat.completions.create(
-            model=Config.MODEL_NAME,
+            model=model,
             messages=[{"role": "user", "content": prompt}],
             n=n,
             temperature=1.0,
@@ -77,7 +79,7 @@ def run_prediction_batch(
     print(f"\nRunning {n_runs} predictions for {candidate}...")
 
     # Get all responses at once
-    responses = get_gpt4_responses(client, prompt, n=n_runs)
+    responses = get_gpt4_responses(client, prompt, metric["model"], n=n_runs)
     if not responses:
         return [], pd.DataFrame()
 

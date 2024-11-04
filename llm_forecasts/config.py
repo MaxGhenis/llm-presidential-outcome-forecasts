@@ -11,7 +11,7 @@ class Config:
     API_KEY = os.getenv(
         "OPENAI_API_KEY"
     )  # Make sure to set this environment variable
-    MODEL_NAME = "gpt-4o-mini"
+    MODELS = ["gpt-4o-mini", "gpt-4o"]
     RATE_LIMIT_DELAY = 1  # seconds
 
     # Analysis Settings

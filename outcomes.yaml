@@ -27,7 +27,7 @@ metrics:
       
       After the official thinks through what affected changes in air quality, end your response with a single line containing ONLY a number (with up to one decimal point) representing the average US PM2.5 concentration. For example: 8.4
     validation:
-      min_value: 5.0
+      min_value: 4.0
       max_value: 15.0
       
   - name: gdp_per_capita
@@ -90,21 +90,10 @@ metrics:
       
       After the statistician thinks through what affected the rate, end your response with a single line containing ONLY the poverty rate as a number (with up to one decimal point). For example: 12.4
     validation:
-      min_value: 5.0
+      min_value: 4.0
       max_value: 20.0
 
-regression_variables:
-  controls:
-    - name: incumbent_party
-      type: binary
-    - name: gdp_growth_prior_year
-      type: continuous
-    - name: inflation_rate_prior_year
-      type: continuous
-    - name: approval_rating_at_inauguration
-      type: continuous
-
 analysis_parameters:
-  runs_per_condition: 50
+  runs_per_condition: 10
   confidence_level: 0.95
   random_seed: 42
