@@ -1,0 +1,110 @@
+metrics:
+  - name: pm25
+    full_name: "PM2.5 Air Quality"
+    unit: "μg/m³"
+    source: https://www3.epa.gov/cgi-bin/broker?_service=data&_program=dataprog.aqplot_data_2023.sas&parm=88101&stat=WTDAM&styear=2010&endyear=2023&pre=val&region=99
+    history:
+      2010: 9.8
+      2011: 9.7
+      2012: 9.2
+      2013: 8.9
+      2014: 8.8
+      2015: 8.5
+      2016: 7.7
+      2017: 8.1
+      2018: 8.2
+      2019: 7.4
+      2020: 7.9
+      2021: 8.2
+      2022: 7.4
+      2023: 8.3
+    prompt_template: |
+      Write a scene from November 2026 where the EPA Administrator is drafting their analysis of nationwide air quality. This is set in a world where {candidate} won the 2024 election and took office in January 2025.
+
+      Key context:
+      - Historical PM2.5 levels:
+        {history}
+      
+      After the official thinks through what affected changes in air quality, end your response with a single line containing ONLY a number (with up to one decimal point) representing the average US PM2.5 concentration. For example: 8.4
+    validation:
+      min_value: 5.0
+      max_value: 15.0
+      
+  - name: gdp_per_capita
+    full_name: "Real GDP per Capita"
+    unit: "Chained 2017 dollars"
+    source: https://fred.stlouisfed.org/series/A939RX0Q048SBEA
+    history:
+      2009: 53_212.5
+      2010: 54_188.3
+      2011: 54_603.0
+      2012: 55_422.3
+      2013: 56_171.8
+      2014: 57_137.8
+      2015: 58_363.3
+      2016: 58_967.8
+      2017: 60_000.8
+      2018: 61_417.5
+      2019: 62_676.5
+      2020: 61_083.5
+      2021: 64_670.8
+      2022: 66_057.3
+      2023: 67_632.3
+    prompt_template: |
+      Write a scene from January 2026 where a senior Federal Reserve economist is drafting their analysis of the 2025 annual economic data. This is set in a world where {candidate} won the 2024 election and took office in January 2025.
+
+      Key context:
+      - Historical real GDP per capita (2017 dollars):
+        {history}
+      
+      After the economist thinks through what affected the economy, end your response with a single line containing ONLY the GDP per capita number, without the year. For example: 68500
+    validation:
+      min_value: 50_000
+      max_value: 100_000
+
+  - name: poverty_rate
+    full_name: "Supplemental Poverty Measure Rate"
+    unit: "percent"
+    history:
+      2009: 15.1
+      2010: 15.9
+      2011: 16.1
+      2012: 16.0
+      2013: 15.9
+      2014: 15.6
+      2015: 14.5
+      2016: 14.0
+      2017: 13.9
+      2018: 12.8
+      2019: 11.7
+      2020: 9.2
+      2021: 7.8
+      2022: 12.4
+      2023: 12.9
+    prompt_template: |
+      Write a scene from September 2026 where the U.S. Census Bureau's chief poverty statistician is drafting their speech about the 2025 Supplemental Poverty Measure (SPM) poverty rate. This is set in a world where {candidate} won the 2024 election and took office in January 2025.
+
+      Key context:
+      - Historical SPM poverty rates:
+        {history}
+      
+      After the statistician thinks through what affected the rate, end your response with a single line containing ONLY the poverty rate as a number (with up to one decimal point). For example: 12.4
+    validation:
+      min_value: 5.0
+      max_value: 20.0
+
+regression_variables:
+  controls:
+    - name: incumbent_party
+      type: binary
+    - name: gdp_growth_prior_year
+      type: continuous
+    - name: inflation_rate_prior_year
+      type: continuous
+    - name: approval_rating_at_inauguration
+      type: continuous
+
+analysis_parameters:
+  runs_per_condition: 50
+  confidence_level: 0.95
+  random_seed: 42
