@@ -31,56 +31,137 @@ class Analysis:
         stats_df.columns = ["n", "mean", "std", "ci_lower", "ci_upper"]
         return stats_df
 
+    # In Analysis class
     def model_comparison_effects(self) -> pd.DataFrame:
-        """Calculate effects with model interactions"""
+        """Calculate effects with base model comparisons"""
         effects = []
 
         for outcome in self.df["outcome"].unique():
             outcome_df = self.df[self.df["outcome"] == outcome].copy()
 
+            # Get actual models present in data
+            present_models = outcome_df["model"].unique()
+
             # Create dummy variables
             outcome_df["harris"] = (
                 outcome_df["candidate"] == "Kamala Harris"
             ).astype(int)
-            outcome_df["gpt4o"] = (outcome_df["model"] == "gpt-4o").astype(int)
-            outcome_df["interaction"] = (
-                outcome_df["harris"] * outcome_df["gpt4o"]
+
+            # Only create dummies for models that exist
+            outcome_df["mini"] = (
+                (outcome_df["model"] == "gpt-4o-mini").astype(int)
+                if "gpt-4o-mini" in present_models
+                else 0
+            )
+            outcome_df["grok"] = (
+                (outcome_df["model"] == "grok-beta").astype(int)
+                if "grok-beta" in present_models
+                else 0
             )
 
-            # Run regression with interaction
-            X = sm.add_constant(outcome_df[["harris", "gpt4o", "interaction"]])
+            # Create interaction terms for present models
+            outcome_df["harris_mini"] = (
+                outcome_df["harris"] * outcome_df["mini"]
+            )
+            outcome_df["harris_grok"] = (
+                outcome_df["harris"] * outcome_df["grok"]
+            )
+
+            # Run regression
+            X = sm.add_constant(
+                outcome_df[
+                    ["harris", "mini", "grok", "harris_mini", "harris_grok"]
+                ]
+            )
             y = outcome_df["value"]
             model = sm.OLS(y, X).fit()
 
-            # Calculate effects for each model
-            mini_effect = model.params["harris"]
-            gpt4o_effect = model.params["harris"] + model.params["interaction"]
+            # Calculate effects for each present model
+            result = {
+                "outcome": outcome,
+                "base_effect": model.params["harris"],
+                "base_se": model.bse["harris"],
+                "base_p": model.pvalues["harris"],
+            }
 
-            # Calculate standard errors
-            mini_se = model.bse["harris"]
-            gpt4o_se = np.sqrt(
-                model.bse["harris"] ** 2
-                + model.bse["interaction"] ** 2
-                + 2 * model.cov_params().loc["harris", "interaction"]
+            # Add mini effects if present
+            if "gpt-4o-mini" in present_models:
+                mini_effect = (
+                    model.params["harris"] + model.params["harris_mini"]
+                )
+                mini_se = np.sqrt(
+                    model.bse["harris"] ** 2
+                    + model.bse["harris_mini"] ** 2
+                    + 2 * model.cov_params().loc["harris", "harris_mini"]
+                )
+                result.update(
+                    {
+                        "mini_effect": mini_effect,
+                        "mini_se": mini_se,
+                        "mini_diff": model.params["harris_mini"],
+                        "mini_diff_p": model.pvalues["harris_mini"],
+                    }
+                )
+
+            # Add grok effects if present
+            if "grok-beta" in present_models:
+                grok_effect = (
+                    model.params["harris"] + model.params["harris_grok"]
+                )
+                grok_se = np.sqrt(
+                    model.bse["harris"] ** 2
+                    + model.bse["harris_grok"] ** 2
+                    + 2 * model.cov_params().loc["harris", "harris_grok"]
+                )
+                result.update(
+                    {
+                        "grok_effect": grok_effect,
+                        "grok_se": grok_se,
+                        "grok_diff": model.params["harris_grok"],
+                        "grok_diff_p": model.pvalues["harris_grok"],
+                    }
+                )
+
+            result.update(
+                {"r_squared": model.rsquared, "n_obs": len(outcome_df)}
             )
 
-            # Add to results
-            effects.append(
-                {
-                    "outcome": outcome,
-                    "mini_effect": mini_effect,
-                    "mini_se": mini_se,
-                    "mini_p": model.pvalues["harris"],
-                    "gpt4o_effect": gpt4o_effect,
-                    "gpt4o_se": gpt4o_se,
-                    "interaction": model.params["interaction"],
-                    "interaction_p": model.pvalues["interaction"],
-                    "r_squared": model.rsquared,
-                    "n_obs": len(outcome_df),
-                }
-            )
+            effects.append(result)
 
         return pd.DataFrame(effects)
+
+    def generate_latex_table(self) -> str:
+        """Generate LaTeX table with model comparison results"""
+        effects_df = self.model_comparison_effects()
+
+        latex_str = r"""\begin{table}[htbp]
+    \centering
+    \caption{Harris vs Trump Effects by Model}
+    \begin{tabular}{lccccc}
+    \hline
+    & \multicolumn{1}{c}{GPT-4o} & \multicolumn{2}{c}{GPT-4o-mini} & \multicolumn{2}{c}{Grok} \\
+    Outcome & Effect & Effect & Diff & Effect & Diff \\
+    \hline
+    """
+
+        for _, row in effects_df.iterrows():
+            latex_str += (
+                f"{row['outcome']} & "
+                f"{row['base_effect']:.2f} ({row['base_se']:.2f}) & "
+                f"{row['mini_effect']:.2f} ({row['mini_se']:.2f}) & "
+                f"{row['mini_diff']:.2f}{'***' if row['mini_diff_p'] < 0.001 else '**' if row['mini_diff_p'] < 0.01 else '*' if row['mini_diff_p'] < 0.05 else ''} & "
+                f"{row['grok_effect']:.2f} ({row['grok_se']:.2f}) & "
+                f"{row['grok_diff']:.2f}{'***' if row['grok_diff_p'] < 0.001 else '**' if row['grok_diff_p'] < 0.01 else '*' if row['grok_diff_p'] < 0.05 else ''} \\\\\n"
+            )
+
+        latex_str += r"""\hline
+    \multicolumn{6}{p{0.95\textwidth}}{\small Note: Effects show difference in predictions between Harris and Trump. 
+    Standard errors in parentheses. Diff columns show difference from GPT-4o effect. * p<0.05, ** p<0.01, *** p<0.001} \\
+    \end{tabular}
+    \label{tab:model_comparison}
+    \end{table}"""
+
+        return latex_str
 
     def conduct_robustness_checks(self) -> pd.DataFrame:
         """Conduct additional robustness checks"""
@@ -217,35 +298,3 @@ class Analysis:
             plt.title(f"Distribution of Predictions: {outcome}")
             plt.savefig(output_dir / f"{outcome}_boxplot_with_points.png")
             plt.close()
-
-    def generate_latex_table(self) -> str:
-        """Generate LaTeX table with model comparison results"""
-        effects_df = self.model_comparison_effects()
-
-        latex_str = r"""\begin{table}[htbp]
-\centering
-\caption{Model Comparison of Harris vs Trump Effects}
-\begin{tabular}{lcccccc}
-\hline
-& \multicolumn{2}{c}{GPT-4o} & \multicolumn{2}{c}{GPT-4o-mini} & \multicolumn{2}{c}{Interaction} \\
-Outcome & Effect & SE & Effect & SE & Diff & p-value \\
-\hline
-"""
-
-        for _, row in effects_df.iterrows():
-            latex_str += (
-                f"{row['outcome']} & "
-                f"{row['gpt4o_effect']:.2f} & ({row['gpt4o_se']:.2f}) & "
-                f"{row['mini_effect']:.2f} & ({row['mini_se']:.2f}) & "
-                f"{row['interaction']:.2f} & "
-                f"{'<0.001' if row['interaction_p'] < 0.001 else f'{row['interaction_p']:.3f}'} \\\\\n"
-            )
-
-        latex_str += r"""\hline
-\multicolumn{7}{p{0.8\textwidth}}{\small Note: Effects show difference in predictions between Harris and Trump. 
-Interaction shows difference between GPT-4o and GPT-4o-mini effects. Standard errors in parentheses.} \\
-\end{tabular}
-\label{tab:model_comparison}
-\end{table}"""
-
-        return latex_str

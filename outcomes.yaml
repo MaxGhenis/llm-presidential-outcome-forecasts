@@ -92,8 +92,3 @@ metrics:
     validation:
       min_value: 4.0
       max_value: 20.0
-
-analysis_parameters:
-  runs_per_condition: 10
-  confidence_level: 0.95
-  random_seed: 42

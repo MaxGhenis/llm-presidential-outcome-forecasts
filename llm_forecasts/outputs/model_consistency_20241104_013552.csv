@@ -1,7 +1,0 @@
-,outcome,model,effect,model_correlation
-0,pm25,gpt-4o-mini,-0.07000000000000028,1.0
-1,pm25,gpt-4o,-1.2699999999999996,1.0
-2,gdp_per_capita,gpt-4o-mini,-204.76999999998952,-1.0
-3,gdp_per_capita,gpt-4o,307.43000000000757,-1.0
-4,poverty_rate,gpt-4o-mini,-0.5600000000000005,0.9999999999999999
-5,poverty_rate,gpt-4o,-2.1099999999999994,0.9999999999999999

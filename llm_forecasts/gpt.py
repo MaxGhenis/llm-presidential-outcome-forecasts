@@ -2,25 +2,49 @@ from openai import OpenAI
 from typing import List, Dict, Tuple
 import pandas as pd
 from datetime import datetime
+import requests
 from .config import Config
 from .utils import format_history
 from .validation import extract_numbers_vectorized
 
 
-def get_gpt4_responses(
+def get_model_response(
     client: OpenAI, prompt: str, model: str, n: int = 50
 ) -> List[str]:
-    """Get multiple responses from GPT-4 in one call"""
+    """Get multiple responses from model API"""
     try:
-        response = client.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            n=n,
-            temperature=1.0,
-        )
-        return [choice.message.content for choice in response.choices]
+        if model.startswith("gpt"):
+            response = client.chat.completions.create(
+                model=model,
+                messages=[{"role": "user", "content": prompt}],
+                n=n,
+                temperature=1.0,
+            )
+            return [choice.message.content for choice in response.choices]
+        elif model == "grok-beta":
+            responses = []
+            for _ in range(
+                n
+            ):  # xAI API doesn't support n parameter, so we loop
+                response = requests.post(
+                    "https://api.x.ai/v1/chat/completions",
+                    headers={
+                        "Content-Type": "application/json",
+                        "Authorization": f"Bearer {Config.XAI_API_KEY}",
+                    },
+                    json={
+                        "messages": [{"role": "user", "content": prompt}],
+                        "model": "grok-beta",
+                        "temperature": 1.0,
+                        "stream": False,
+                    },
+                )
+                responses.append(
+                    response.json()["choices"][0]["message"]["content"]
+                )
+            return responses
     except Exception as e:
-        print(f"Error getting GPT-4 responses: {e}")
+        print(f"Error getting model responses: {e}")
         return []
 
 
@@ -79,7 +103,7 @@ def run_prediction_batch(
     print(f"\nRunning {n_runs} predictions for {candidate}...")
 
     # Get all responses at once
-    responses = get_gpt4_responses(client, prompt, metric["model"], n=n_runs)
+    responses = get_model_response(client, prompt, metric["model"], n=n_runs)
     if not responses:
         return [], pd.DataFrame()
 
