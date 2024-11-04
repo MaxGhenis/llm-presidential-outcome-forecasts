@@ -13,27 +13,7 @@ A modular system was developed to interact with multiple model APIs:
     \item \textbf{Response Validation:} Immediate validation of API responses
 \end{itemize}
 
-The system uses async/await patterns to efficiently manage multiple API calls:
-
-\begin{verbatim}
-async def get_model_response(
-    prompt: str,
-    model: str,
-    max_tokens: int = 500
-) -> Dict:
-    if model.startswith("gpt"):
-        response = await openai.ChatCompletion.create(
-            model=model,
-            messages=[{"role": "user", 
-                      "content": prompt}],
-            max_tokens=max_tokens
-        )
-        return {
-            "response": response.choices[0].message.content,
-            "model": model,
-            "timestamp": datetime.now().isoformat()
-        }
-\end{verbatim}
+The system uses the $n$ keyword in the API calls to request multiple responses without duplicating input tokens.
 
 \subsection{Response Processing}
 
@@ -107,4 +87,4 @@ The implementation emphasizes reproducibility through:
     \item \textbf{Random Seed Control:} Fixed seeds for reproducible sampling
 \end{itemize}
 
-The complete implementation is available at \url{https://github.com/MaxGhenis/llm-forecasting}.
+The complete implementation is available at \url{https://github.com/MaxGhenis/llm-presidential-outcome-forecasts}.

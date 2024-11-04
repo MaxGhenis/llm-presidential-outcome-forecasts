@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+    \centering
+    \caption{Harris vs Trump Effects by Model}
+    \begin{tabular}{lccccc}
+    \hline
+    & \multicolumn{1}{c}{GPT-4o} & \multicolumn{2}{c}{GPT-4o-mini} & \multicolumn{2}{c}{Grok} \\
+    Outcome & Effect & Effect & Diff & Effect & Diff \\
+    \hline
+    pm25 & -1.25 (0.03) & -0.15 (0.03) & 1.10*** & -1.53 (0.03) & -0.29*** \\
+gdp_per_capita & 403.19 (118.88) & 349.16 (119.11) & -54.03 & 776.78 (120.33) & 373.58* \\
+poverty_rate & -1.83 (0.08) & -0.71 (0.08) & 1.12*** & -3.42 (0.08) & -1.59*** \\
+\hline
+    \multicolumn{6}{p{0.95\textwidth}}{\small Note: Effects show difference in predictions between Harris and Trump. 
+    Standard errors in parentheses. Diff columns show difference from GPT-4o effect. * p<0.05, ** p<0.01, *** p<0.001} \\
+    \end{tabular}
+    \label{tab:model_comparison}
+    \end{table}

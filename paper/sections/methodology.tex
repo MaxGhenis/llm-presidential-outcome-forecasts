@@ -2,46 +2,63 @@
 
 \subsection{Narrative Prompting Framework}
 
-Building on \cite{cunningham2024base}'s demonstration that narrative framing improves language model forecasting accuracy, I adopt a similar approach for policy prediction. The key insight is that language models perform better when asked to tell stories about future events as if they were historical, rather than making direct predictions.
+Building on \cite{cunningham2024base}'s demonstration that narrative framing improves language model forecasting accuracy, I adopt a similar approach for policy prediction. My key insight is that language models perform better when asked to recount future events as if they were historical, rather than making direct predictions.
 
-For example, rather than directly asking "What will the PM2.5 level be under President X?", I construct a scene where an EPA official in 2025 is giving a presentation reviewing environmental outcomes. This approach offers several advantages:
+For example, rather than directly asking, "What will the PM2.5 level be under President X?", I construct a scenario where an EPA official in 2025 presents environmental outcomes. This approach offers several advantages:
 
 \begin{itemize}
-    \item Allows models to integrate domain knowledge naturally
-    \item Reduces apparent conflict with terms of service around prediction
-    \item Provides context for coherent scenario generation
-    \item Mimics how real-world experts discuss outcomes
+    \item It allows models to integrate domain knowledge naturally.
+    \item It avoids conflicts with terms of service around prediction.
+    \item It provides context for coherent scenario generation.
+    \item It mirrors how real-world experts discuss outcomes.
 \end{itemize}
 
 \subsection{Models and Metrics}
 
 I examine three large language models:
 \begin{itemize}
-    \item GPT-4 (OpenAI)
-    \item GPT-4-mini (OpenAI)
+    \item GPT-4o (OpenAI)
+    \item GPT-4o-mini (OpenAI)
     \item Grok (xAI)
 \end{itemize}
 
-For each model, I gather predictions on three key metrics for 2025:
-\begin{itemize}
-    \item PM2.5 air quality ($\mu g/m^3$): A key measure of air pollution with direct health impacts
-    \item GDP per capita (2017 dollars): Capturing overall economic performance
-    \item Supplemental Poverty Measure rate (\%): Reflecting distributional outcomes
-\end{itemize}
+I also attempted to use Claude and Gemini models, but both declined to provide predictions on political outcomes.
 
-These metrics were chosen to span different policy domains while having clear numerical outcomes and established measurement approaches.
+For each model, I gather predictions on three key metrics for 2025. Table~\ref{tab:metrics} provides descriptions, data sources, and recent historical data ranges for each metric.
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \caption{Metrics and Descriptions}
+    \begin{tabular}{p{5cm} p{9cm}}
+    \hline
+    Metric & Description \\
+    \hline
+    PM2.5 ($\mu g/m^3$) & Annual mean of particulate matter concentration, indicating air quality and health impacts \\
+    GDP per capita (2017 dollars) & Real GDP per capita, capturing economic performance in inflation-adjusted dollars \\
+    Supplemental Poverty Measure (SPM) rate (\%) & Percentage of people in poverty, accounting for income, resources, and thresholds specific to the SPM \\
+    \hline
+    \end{tabular}
+    \label{tab:metrics}
+\end{table}
+
+\subsection{Historical Context and Thresholds}
+
+I prompted each model with historical data from 2010 to 2023 for each of the requested metrics, based on authoritative sources. For PM2.5, I used EPA data on air quality trends \cite{epa_pm25_trends}. For GDP per capita, I provided historical values from the U.S. Bureau of Economic Analysis \cite{fred_gdp_per_capita}. For the SPM rate, I used data and thresholds from the Census Bureau’s supplemental poverty documentation \cite{census_spm_2023}, along with specific information on SPM resources and thresholds outlined in their technical documentation \cite{spm_techdoc}.
+
+This context enabled each model to anchor its predictions in recent historical trends, enhancing the credibility and relevance of generated forecasts.
 
 \subsection{Experimental Design}
 
-For each combination of model, candidate, and metric, I conduct 100 trials using narrative prompts. The prompts vary by metric type:
+For each combination of model, candidate, and metric, I conduct 500 trials using narrative prompts. The prompts vary by metric type:
 
 \begin{itemize}
-    \item \textbf{Economic metrics:} Federal Reserve Chair Jerome Powell giving speeches
-    \item \textbf{Environmental metrics:} EPA officials presenting data
-    \item \textbf{Social metrics:} Policy analysts reviewing outcomes
+    \item \textbf{Economic metrics:} Senior Federal Reserve official giving a speech
+    \item \textbf{Environmental metrics:} EPA Administrator presenting data
+    \item \textbf{Social metrics:} Census Bureau economist reviewing outcomes
 \end{itemize}
 
-Each narrative is set in late 2025, allowing time for initial policy impacts while remaining within a reasonable forecasting horizon. The prompts include consistent elements across trials:
+Each narrative is set in late 2025, allowing time for initial policy impacts while remaining within a reasonable forecasting horizon. I include consistent elements across trials to maintain structure:
 
 \begin{itemize}
     \item Setting (e.g., conference presentation, agency briefing)
@@ -52,14 +69,14 @@ Each narrative is set in late 2025, allowing time for initial policy impacts whi
 
 \subsection{Statistical Framework}
 
-The analysis employs a regression framework with model interactions to examine:
+I employ a regression framework with model interactions to examine:
 \begin{itemize}
     \item Main effects of candidate choice on outcomes
     \item Differences between models in predicted effects
     \item Variance patterns across models and metrics
 \end{itemize}
 
-For each metric $m$, candidate $c$, and model $k$, the basic specification is:
+For each metric $m$, candidate $c$, and model $k$, I use the following specification:
 
 \begin{equation}
     Y_{mcki} = \beta_0 + \beta_1 \text{Harris}_c + \gamma_k + \delta_k \text{Harris}_c + \epsilon_{mcki}

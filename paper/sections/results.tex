@@ -1,78 +1,34 @@
 \section{Results}\label{sec:results}
 
-\subsection{Main Effects}
+\subsection{Predicted Harris Effects Across Models}
 
-Table~\ref{tab:model_comparison} presents the core results of the analysis, showing predicted differences between Harris and Trump administrations across metrics and models. Several key patterns emerge:
+Table~\ref{tab:harris_effects} shows the predicted effects under a Harris administration across three main outcomes: air quality (PM2.5), GDP per capita, and poverty rate. All models predict improvements under a Harris administration, with reductions in PM2.5 and poverty rates and an increase in GDP per capita.
 
-\begin{enumerate}
-    \item \textbf{Environmental Effects:} All models predict improved air quality (lower PM2.5) under Harris:
-    \begin{itemize}
-        \item GPT-4o: -1.28 $\mu g/m^3$ (SE: 0.04)
-        \item GPT-4o-mini: -0.16 $\mu g/m^3$ (SE: 0.04)
-        \item Grok: -1.54 $\mu g/m^3$ (SE: 0.04)
-    \end{itemize}
-    
-    \item \textbf{Economic Effects:} GDP predictions show substantial uncertainty:
-    \begin{itemize}
-        \item GPT-4o: +\$328.63 per capita (SE: 166.88)
-        \item GPT-4o-mini: +\$157.86 per capita (SE: 167.51)
-        \item Grok: +\$782.74 per capita (SE: 169.44)
-    \end{itemize}
-    
-    \item \textbf{Poverty Effects:} Consistent prediction of poverty reduction:
-    \begin{itemize}
-        \item GPT-4o: -1.92 percentage points (SE: 0.11)
-        \item GPT-4o-mini: -0.75 percentage points (SE: 0.11)
-        \item Grok: -3.44 percentage points (SE: 0.11)
-    \end{itemize}
-\end{enumerate}
+While the general direction of these effects is consistent, the magnitude varies by model. For example, the Grok model predicts the largest impact across all outcomes, with a PM2.5 reduction of 1.51 $\mu g/m^3$ (SE: 0.02, p < 0.001) and a poverty rate reduction of 3.42 percentage points (SE: 0.07, p < 0.001). GPT-4o-mini, on the other hand, consistently shows more modest effects, predicting a PM2.5 reduction of just 0.15 $\mu g/m^3$ (SE: 0.02, p < 0.001) and a poverty rate reduction of 0.68 percentage points (SE: 0.07, p < 0.001).
 
 \begin{table}[htbp]
     \centering
-    \caption{Harris vs Trump Effects by Model}
-    \begin{tabular}{lccccc}
+    \caption{Predicted Harris Effects by Model}
+    \begin{tabular}{lccc}
     \hline
-    & \multicolumn{1}{c}{GPT-4o} & \multicolumn{2}{c}{GPT-4o-mini} & \multicolumn{2}{c}{Grok} \\
-    Outcome & Effect & Effect & Diff & Effect & Diff \\
+    Outcome & GPT-4o & GPT-4o-mini & Grok \\
     \hline
-    pm25 & -1.28 (0.04) & -0.16 (0.04) & 1.12*** & -1.54 (0.04) & -0.26*** \\
-    gdp\_per\_capita & 328.63 (166.88) & 157.86 (167.51) & -170.76 & 782.74 (169.44) & 454.11 \\
-    poverty\_rate & -1.92 (0.11) & -0.75 (0.11) & 1.17*** & -3.44 (0.11) & -1.52*** \\
+    Mean PM2.5 ($\mu g/m^3$) & -1.26*** (0.02) & -0.15*** (0.02) & -1.51*** (0.02) \\
+    GDP per Capita (\$) & 387.61*** (103.05) & 264.25*** (103.16) & 802.47*** (104.48) \\
+    Supplemental Poverty Measure (pp) & -1.76*** (0.07) & -0.68*** (0.07) & -3.42*** (0.07) \\
     \hline
-    \multicolumn{6}{p{0.95\textwidth}}{\small Note: Effects show difference in predictions between Harris and Trump. 
-    Standard errors in parentheses. Diff columns show difference from GPT-4o effect. * p<0.05, ** p<0.01, *** p<0.001} \\
+    \multicolumn{4}{p{0.8\textwidth}}{\small Note: Standard errors in parentheses. Significance levels: * p<0.05, ** p<0.01, *** p<0.001} \\
     \end{tabular}
-    \label{tab:model_comparison}
+    \label{tab:harris_effects}
 \end{table}
 
-\subsection{Model Differences}
+\subsection{Significance of Model Differences}
 
-Systematic patterns emerge in how models differ from the base GPT-4o predictions:
+\begingroup
+\renewcommand{\_}{\string_}
+\input{../llm_forecasts/outputs/model_comparison_table_20241104_043856}
+\endgroup
 
-\begin{enumerate}
-    \item \textbf{GPT-4o-mini} consistently predicts smaller effects:
-    \begin{itemize}
-        \item Significantly smaller PM2.5 effect (1.12 $\mu g/m^3$ smaller, p < 0.001)
-        \item Smaller GDP effect (-170.76, n.s.)
-        \item Smaller poverty reduction (1.17 percentage points smaller, p < 0.001)
-    \end{itemize}
+The results indicate that GPT-4o-mini generally produces smaller effect sizes compared to GPT-4o, with significant differences observed in the reduction of PM2.5 (1.11 $\mu g/m^3$, p < 0.001) and poverty rate (1.08 percentage points, p < 0.001). The Grok model, conversely, predicts larger effects in all areas, with a notable increase in GDP effect of 414.86 (p < 0.01). These discrepancies suggest that GPT-4o-mini and Grok diverge in their approach to effect prediction.
 
-    \item \textbf{Grok} tends toward larger effects:
-    \begin{itemize}
-        \item Larger PM2.5 improvement (-0.26 $\mu g/m^3$ difference, p < 0.001)
-        \item Higher GDP effect (454.11 difference, n.s.)
-        \item Larger poverty reduction (-1.52 difference, p < 0.001)
-    \end{itemize}
-\end{enumerate}
-
-\subsection{Prediction Uncertainty}
-
-The standard errors in Table~\ref{tab:model_comparison} reveal varying levels of prediction uncertainty:
-
-\begin{itemize}
-    \item \textbf{Environmental predictions} show high precision (SE $\approx$ 0.04 $\mu g/m^3$)
-    \item \textbf{Economic predictions} exhibit substantial uncertainty (SE = \$168)
-    \item \textbf{Poverty predictions} show moderate precision (SE = 0.11 percentage points)
-\end{itemize}
-
-This pattern may reflect the relative complexity and number of factors influencing each outcome, with GDP being particularly challenging to predict.
+For full implementation, see the repository at \url{https://github.com/MaxGhenis/llm-presidential-outcome-forecasts}.

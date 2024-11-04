@@ -58,7 +58,7 @@ Key findings:
   year = {2024},
   publisher = {GitHub},
   journal = {GitHub repository},
-  howpublished = {\url{https://github.com/MaxGhenis/llm-forecasting}}
+  howpublished = {\url{https://github.com/MaxGhenis/llm-presidential-outcome-forecasts}}
 }
 ```
 
