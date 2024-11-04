@@ -1,0 +1,67 @@
+\section{Discussion}\label{sec:discussion}
+
+The results suggest several key insights about both policy forecasting and language model behavior.
+
+\subsection{Model-Specific Patterns}
+
+The systematic differences between models reveal distinct predictive patterns:
+
+\begin{itemize}
+    \item \textbf{GPT-4o} produces moderate predictions with relatively tight distributions, suggesting balanced consideration of competing factors.
+    
+    \item \textbf{GPT-4o-mini} consistently predicts smaller policy impacts, perhaps reflecting a more conservative extrapolation approach or reduced ability to integrate complex policy interactions.
+    
+    \item \textbf{Grok} predicts larger effects, particularly for environmental and poverty outcomes. This could indicate either greater sensitivity to policy signals or potential overconfidence in policy effectiveness.
+\end{itemize}
+
+\subsection{Domain Differences}
+
+The varying precision across metrics suggests that some policy domains may be more amenable to LLM prediction than others:
+
+\begin{itemize}
+    \item \textbf{Environmental predictions} show high precision and consistency, perhaps due to clearer causal mechanisms and policy levers.
+    
+    \item \textbf{Economic predictions} exhibit large uncertainty, reflecting the complex, multi-factor nature of GDP determination and historical difficulty in economic forecasting.
+    
+    \item \textbf{Poverty predictions} show a balance, with clear directional effects but some uncertainty in magnitude.
+\end{itemize}
+
+\subsection{Methodological Implications}
+
+The success of narrative prompting in producing analyzable predictions has several implications:
+
+\begin{enumerate}
+    \item \textbf{Prompt Engineering:} Framing predictions as historical analysis may help models better leverage their training data.
+    
+    \item \textbf{Multi-Model Approach:} The systematic differences between models suggest value in using multiple models as a form of ensemble forecasting.
+    
+    \item \textbf{Domain Adaptation:} The varying success across domains suggests the importance of tailoring prompting strategies to specific prediction tasks.
+\end{enumerate}
+
+\subsection{Limitations}
+
+Several important limitations should be noted:
+
+\begin{enumerate}
+    \item \textbf{Training Data:} Models may reflect biases or limitations in their training data, particularly regarding novel policy proposals.
+    
+    \item \textbf{Implementation Details:} The predictions abstract from specific policy implementation challenges and political constraints.
+    
+    \item \textbf{External Validity:} The accuracy of these predictions cannot be verified until the actual outcomes are observed.
+    
+    \item \textbf{Narrative Constraints:} The narrative approach, while useful, may introduce its own biases in how models frame and consider policy impacts.
+\end{enumerate}
+
+\subsection{Future Research}
+
+This work suggests several promising directions for future research:
+
+\begin{itemize}
+    \item \textbf{Validation Studies:} Apply similar methods to historical policy changes where outcomes are known.
+    
+    \item \textbf{Prompt Optimization:} Systematically compare different narrative frameworks and prompt structures.
+    
+    \item \textbf{Model Integration:} Explore ways to combine LLM predictions with traditional forecasting methods.
+    
+    \item \textbf{Uncertainty Quantification:} Develop better methods for characterizing prediction uncertainty in narrative responses.
+\end{itemize}

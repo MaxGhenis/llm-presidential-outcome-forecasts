@@ -1,0 +1,110 @@
+\section{Technical Implementation}\label{sec:technical}
+
+The implementation consists of several key components designed to ensure reproducible, robust analysis of model predictions.
+
+\subsection{API Integration}
+
+A modular system was developed to interact with multiple model APIs:
+
+\begin{itemize}
+    \item \textbf{Unified Interface:} Common wrapper for GPT-4, GPT-4-mini, and Grok APIs
+    \item \textbf{Rate Limiting:} Automatic handling of API rate limits and quotas
+    \item \textbf{Error Handling:} Robust recovery from API failures and timeouts
+    \item \textbf{Response Validation:} Immediate validation of API responses
+\end{itemize}
+
+The system uses async/await patterns to efficiently manage multiple API calls:
+
+\begin{verbatim}
+async def get_model_response(
+    prompt: str,
+    model: str,
+    max_tokens: int = 500
+) -> Dict:
+    if model.startswith("gpt"):
+        response = await openai.ChatCompletion.create(
+            model=model,
+            messages=[{"role": "user", 
+                      "content": prompt}],
+            max_tokens=max_tokens
+        )
+        return {
+            "response": response.choices[0].message.content,
+            "model": model,
+            "timestamp": datetime.now().isoformat()
+        }
+\end{verbatim}
+
+\subsection{Response Processing}
+
+Given the narrative format of responses, specialized processing was required to extract consistent numerical predictions:
+
+\begin{itemize}
+    \item \textbf{Number Extraction:} Robust regular expressions for various formats:
+    \begin{itemize}
+        \item Direct numerical mentions (e.g., "8.5")
+        \item Percentage representations (e.g., "8.5\%")
+        \item Mixed format numbers (e.g., "8.5 percent")
+    \end{itemize}
+    
+    \item \textbf{Validation Rules:} Multi-stage validation process:
+    \begin{itemize}
+        \item Format validation (correct numerical format)
+        \item Range validation (within reasonable bounds)
+        \item Consistency validation (matches narrative context)
+    \end{itemize}
+    
+    \item \textbf{Statistical Processing:} Tools for aggregating results:
+    \begin{itemize}
+        \item Outlier detection and handling
+        \item Distribution analysis
+        \item Confidence interval calculation
+    \end{itemize}
+\end{itemize}
+
+\subsection{Analysis Pipeline}
+
+The analysis pipeline processes raw model outputs through several stages:
+
+\begin{enumerate}
+    \item \textbf{Data Collection:}
+    \begin{itemize}
+        \item Parallel API calls for efficiency
+        \item Automatic retry on failure
+        \item Response logging and backup
+    \end{itemize}
+    
+    \item \textbf{Data Cleaning:}
+    \begin{itemize}
+        \item Number extraction and validation
+        \item Outlier detection and handling
+        \item Format standardization
+    \end{itemize}
+    
+    \item \textbf{Statistical Analysis:}
+    \begin{itemize}
+        \item Effect size calculation
+        \item Variance analysis
+        \item Model comparison statistics
+    \end{itemize}
+    
+    \item \textbf{Visualization:}
+    \begin{itemize}
+        \item Distribution plots
+        \item Effect size comparisons
+        \item Time series analysis
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Reproducibility}
+
+The implementation emphasizes reproducibility through:
+
+\begin{itemize}
+    \item \textbf{Version Control:} All code and prompts in Git repository
+    \item \textbf{Environment Management:} Dependencies specified in requirements.txt
+    \item \textbf{Data Storage:} Raw API responses preserved
+    \item \textbf{Random Seed Control:} Fixed seeds for reproducible sampling
+\end{itemize}
+
+The complete implementation is available at \url{https://github.com/MaxGhenis/llm-forecasting}.

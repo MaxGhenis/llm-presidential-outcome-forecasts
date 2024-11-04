@@ -1,0 +1,26 @@
+\section{Introduction}
+
+Recent work by \cite{cunningham2024base} demonstrated that large language models can produce more reliable forecasts when prompted through narrative scenarios rather than direct questions. This finding opens new possibilities for policy analysis, particularly in forecasting the potential impacts of different policy regimes. While traditional policy analysis relies heavily on economic modeling and historical data, language models trained on vast corpora of policy analysis, news, and academic research may offer complementary insights---particularly when properly prompted to leverage their capabilities.
+
+The 2024 U.S. presidential election provides an important case study for exploring these capabilities. The stark policy differences between candidates create clear potential for divergent outcomes across various metrics. However, traditional forecasting approaches face several challenges:
+
+\begin{itemize}
+    \item Limited historical precedent for many proposed policies
+    \item Complex interaction effects between multiple policy changes
+    \item Difficulty incorporating qualitative policy analysis
+    \item Uncertainty about implementation details
+\end{itemize}
+
+This paper explores whether narrative-prompted language models can help address these challenges. I systematically compare predictions from three leading models (GPT-4, GPT-4-mini, and Grok) across three key policy-relevant metrics:
+
+\begin{itemize}
+    \item PM2.5 air quality ($\mu g/m^3$)
+    \item GDP per capita (2017 dollars)
+    \item Supplemental Poverty Measure rate (\%)
+\end{itemize}
+
+These metrics were chosen to span environmental, economic, and social policy domains while having clear numerical outcomes. For each combination of model, metric, and candidate, I conduct 100 trials using narrative prompts that frame the prediction task as historical analysis from 2025. This approach builds on \cite{cunningham2024base}'s finding that such framing improves forecast accuracy.
+
+The results reveal systematic differences between models in both the magnitude and consistency of predicted policy impacts. While all models show significant predicted differences between candidates on most metrics, the size of these effects varies substantially. These patterns provide insight into both the potential and limitations of using language models for policy forecasting.
+
+The remainder of this paper proceeds as follows: Section \ref{sec:methodology} describes the narrative prompting approach and experimental design. Section \ref{sec:technical} details the technical implementation. Section \ref{sec:results} presents the main findings. Section \ref{sec:discussion} explores implications and limitations, and Section \ref{sec:conclusion} concludes.
