@@ -1,0 +1,58 @@
+,outcome,coefficients,std_errors,p_values
+0,pm25,"const          8.325600
+harris        -1.259800
+mini          -0.134400
+grok           0.552356
+harris_mini    1.110000
+harris_grok   -0.251019
+dtype: float64","const          0.017513
+harris         0.024767
+mini           0.024767
+grok           0.024779
+harris_mini    0.035026
+harris_grok    0.035070
+dtype: float64","const           0.000000e+00
+harris          0.000000e+00
+mini            6.203140e-08
+grok           5.919600e-102
+harris_mini    2.774833e-190
+harris_grok     1.027957e-12
+dtype: float64"
+1,gdp_per_capita,"const          68176.236874
+harris           387.612425
+mini             274.444615
+grok             337.433689
+harris_mini     -123.361449
+harris_grok      414.856117
+dtype: float64","const           72.869010
+harris         103.052342
+mini           103.155965
+grok           104.067135
+harris_mini    145.811311
+harris_grok    146.752408
+dtype: float64","const          0.000000
+harris         0.000172
+mini           0.007845
+grok           0.001198
+harris_mini    0.397602
+harris_grok    0.004731
+dtype: float64"
+2,poverty_rate,"const          12.504225
+harris         -1.761625
+mini            0.405975
+grok            1.461907
+harris_mini     1.082487
+harris_grok    -1.658415
+dtype: float64","const          0.048359
+harris         0.068287
+mini           0.068287
+grok           0.068321
+harris_mini    0.096524
+harris_grok    0.096548
+dtype: float64","const           0.000000e+00
+harris         1.156488e-132
+mini            3.081934e-09
+grok            1.252177e-94
+harris_mini     1.276802e-28
+harris_grok     3.846933e-63
+dtype: float64"

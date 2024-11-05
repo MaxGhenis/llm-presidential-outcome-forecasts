@@ -1,11 +1,9 @@
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-from typing import Dict, List
-import statsmodels.api as sm
-from pathlib import Path
 import numpy as np
-import scipy.stats as stats
+import statsmodels.api as sm
+import seaborn as sns
+import matplotlib.pyplot as plt
+from pathlib import Path
 
 
 class Analysis:
@@ -13,25 +11,6 @@ class Analysis:
         """Initialize with results dataframe."""
         self.df = df
 
-    def basic_statistics(self) -> pd.DataFrame:
-        """Calculate basic statistics for each outcome, model, and candidate"""
-        stats_df = (
-            self.df.groupby(["outcome", "model", "candidate"])["value"]
-            .agg(
-                [
-                    "count",
-                    "mean",
-                    "std",
-                    lambda x: x.quantile(0.025),
-                    lambda x: x.quantile(0.975),
-                ]
-            )
-            .round(3)
-        )
-        stats_df.columns = ["n", "mean", "std", "ci_lower", "ci_upper"]
-        return stats_df
-
-    # In Analysis class
     def model_comparison_effects(self) -> pd.DataFrame:
         """Calculate effects with base model comparisons"""
         effects = []
@@ -76,59 +55,62 @@ class Analysis:
             y = outcome_df["value"]
             model = sm.OLS(y, X).fit()
 
-            # Calculate effects for each present model
+            # Collect regression results
             result = {
                 "outcome": outcome,
-                "base_effect": model.params["harris"],
-                "base_se": model.bse["harris"],
-                "base_p": model.pvalues["harris"],
+                "coefficients": model.params,
+                "std_errors": model.bse,
+                "p_values": model.pvalues,
             }
-
-            # Add mini effects if present
-            if "gpt-4o-mini" in present_models:
-                mini_effect = (
-                    model.params["harris"] + model.params["harris_mini"]
-                )
-                mini_se = np.sqrt(
-                    model.bse["harris"] ** 2
-                    + model.bse["harris_mini"] ** 2
-                    + 2 * model.cov_params().loc["harris", "harris_mini"]
-                )
-                result.update(
-                    {
-                        "mini_effect": mini_effect,
-                        "mini_se": mini_se,
-                        "mini_diff": model.params["harris_mini"],
-                        "mini_diff_p": model.pvalues["harris_mini"],
-                    }
-                )
-
-            # Add grok effects if present
-            if "grok-beta" in present_models:
-                grok_effect = (
-                    model.params["harris"] + model.params["harris_grok"]
-                )
-                grok_se = np.sqrt(
-                    model.bse["harris"] ** 2
-                    + model.bse["harris_grok"] ** 2
-                    + 2 * model.cov_params().loc["harris", "harris_grok"]
-                )
-                result.update(
-                    {
-                        "grok_effect": grok_effect,
-                        "grok_se": grok_se,
-                        "grok_diff": model.params["harris_grok"],
-                        "grok_diff_p": model.pvalues["harris_grok"],
-                    }
-                )
-
-            result.update(
-                {"r_squared": model.rsquared, "n_obs": len(outcome_df)}
-            )
 
             effects.append(result)
 
         return pd.DataFrame(effects)
+
+    def generate_regression_latex_table(self) -> str:
+        """Generate LaTeX table with detailed regression results"""
+        effects_df = self.model_comparison_effects()
+
+        latex_str = r"""\begin{table}[htbp]
+    \centering
+    \caption{Regression Results by Model and Outcome}
+    \begin{tabular}{lccc}
+    \hline
+    Variable & Coefficient & Std. Error & p-value \\
+    \hline
+    """
+
+        # Loop over each outcome and each variable in the regression
+        for _, row in effects_df.iterrows():
+            latex_str += (
+                r"\multicolumn{4}{c}{\textbf{"
+                + row["outcome"]
+                + r"}} \\"
+                + "\n"
+            )
+
+            for var, coef in row["coefficients"].items():
+                se = row["std_errors"][var]
+                p_val = row["p_values"][var]
+
+                # Format significance stars
+                stars = (
+                    "***"
+                    if p_val < 0.001
+                    else "**" if p_val < 0.01 else "*" if p_val < 0.05 else ""
+                )
+
+                latex_str += f"{var} & {coef:.3f} & {se:.3f} & {p_val:.3f}{stars} \\\\\n"
+
+            latex_str += r"\hline" + "\n"
+
+        latex_str += r"""\multicolumn{4}{p{0.8\textwidth}}{\small Note: 
+        Significance levels: * p<0.05, ** p<0.01, *** p<0.001.} \\
+    \end{tabular}
+    \label{tab:regression_results}
+    \end{table}"""
+
+        return latex_str
 
     def generate_latex_table(self) -> str:
         """Generate LaTeX table with model comparison results"""
